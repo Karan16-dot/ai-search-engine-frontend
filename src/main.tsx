@@ -5,8 +5,20 @@ import App from "./App";
 
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+import { ChatProvider } from "@/context/ChatContext";
+
+ReactDOM.createRoot(
+    document.getElementById("root")!
+).render(
+
     <React.StrictMode>
-        <App />
+
+        <ChatProvider>
+
+            <App />
+
+        </ChatProvider>
+
     </React.StrictMode>
+
 );

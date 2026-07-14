@@ -1,16 +1,15 @@
-import ChatMessageComponent from "./ChatMessage";
+import ChatMessage from "./ChatMessage";
 
-import type { ChatMessage } from "@/types/chat";
+import { useChatContext } from "@/context/ChatContext";
 
-interface Props {
-    messages: ChatMessage[];
-}
+function MessageList() {
 
-function MessageList({ messages }: Props) {
+    const { messages } = useChatContext();
+
     return (
         <div className="space-y-6">
-            {messages.map((message) => (
-                <ChatMessageComponent
+            {messages.map(message => (
+                <ChatMessage
                     key={message.id}
                     role={message.role}
                     content={message.content}
