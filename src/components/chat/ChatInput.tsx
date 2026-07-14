@@ -6,7 +6,8 @@ import {
 } from "@/components/ui";
 
 interface ChatInputProps {
-    initialQuery?: string;
+    onSend(message:string): void;
+    loading: boolean
 }
 
 function ChatInput({

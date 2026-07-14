@@ -1,25 +1,63 @@
 import { useState } from "react";
-import api from "../services/api";
-import type { ChatResponse } from "../types/chat";
+
+import api from "@/services/api";
+
+import type {
+    ChatMessage,
+    ChatResponse,
+} from "@/types/chat";
 
 export function useChat() {
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+
     const [loading, setLoading] = useState(false);
 
-    const [response, setResponse] =
-        useState<ChatResponse | null>(null);
+    const sendMessage = async (query: string) => {
+        if (!query.trim()) return;
 
-    const sendMessage = async (message: string) => {
+        const userMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: "user",
+            content: query,
+        };
+
+        setMessages((previous) => [...previous, userMessage]);
+
+        setLoading(true);
+
         try {
-            setLoading(true);
-
             const { data } = await api.post<ChatResponse>(
                 "/chat",
                 {
-                    message,
+                    message: query,
                 }
             );
 
-            setResponse(data);
+            const assistantMessage: ChatMessage = {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: data.answer,
+            };
+
+            setMessages((previous) => [
+                ...previous,
+                assistantMessage,
+            ]);
+
+        } catch (error) {
+            const assistantMessage: ChatMessage = {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content:
+                    "Something went wrong while contacting the server.",
+            };
+
+            setMessages((previous) => [
+                ...previous,
+                assistantMessage,
+            ]);
+
+            console.error(error);
 
         } finally {
             setLoading(false);
@@ -27,8 +65,8 @@ export function useChat() {
     };
 
     return {
+        messages,
         loading,
-        response,
         sendMessage,
     };
 }
