@@ -6,8 +6,10 @@ export interface ChatMessage {
     content: string;
 }
 
-export interface ChatRequest {
-    message: string;
+export interface Conversation {
+    id: string;
+    title: string;
+    messages: ChatMessage[];
 }
 
 export interface Source {
