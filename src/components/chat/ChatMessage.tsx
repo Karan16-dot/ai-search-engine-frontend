@@ -1,3 +1,5 @@
+import MarkdownRenderer from "@/components/markdown/MarkdownRenderer";
+
 interface ChatMessageProps {
     role: "user" | "assistant";
     content: string;
@@ -7,15 +9,12 @@ function ChatMessage({
     role,
     content,
 }: ChatMessageProps) {
-
     const isAssistant = role === "assistant";
 
     return (
         <div
             className={`flex ${
-                isAssistant
-                    ? "justify-start"
-                    : "justify-end"
+                isAssistant ? "justify-start" : "justify-end"
             }`}
         >
             <div
@@ -31,7 +30,11 @@ function ChatMessage({
                     }
                 `}
             >
-                {content}
+                {isAssistant ? (
+                    <MarkdownRenderer content={content} />
+                ) : (
+                    content
+                )}
             </div>
         </div>
     );
