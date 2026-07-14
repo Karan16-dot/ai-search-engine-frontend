@@ -1,8 +1,26 @@
 function Footer() {
     return (
-        <p className="text-gray-500 text-sm">
-            Powered by Gemini • Tavily • FastAPI
-        </p>
+        <footer className="text-gray-500 text-sm">
+
+            Powered by
+
+            <span className="font-medium">
+                {" "}Gemini
+            </span>
+
+            {" • "}
+
+            <span className="font-medium">
+                Tavily
+            </span>
+
+            {" • "}
+
+            <span className="font-medium">
+                FastAPI
+            </span>
+
+        </footer>
     );
 }
 

@@ -1,23 +1,35 @@
 import Hero from "./Hero";
-import SearchBox from "./SearchBox";
 import Footer from "./Footer";
+import SearchBox from "./SearchBox";
 
-type LandingProps = {
-    onSearch: (query: string) => void;
-};
+interface Props {
 
-function Landing({ onSearch }: LandingProps) {
+    onSearch(query: string): void;
+
+}
+
+function Landing({
+
+    onSearch,
+
+}: Props) {
+
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center gap-10 px-6">
+
+        <main className="min-h-screen flex flex-col justify-center items-center gap-10 px-6">
 
             <Hero />
 
-            <SearchBox onSearch={onSearch} />
+            <SearchBox
+                onSearch={onSearch}
+            />
 
             <Footer />
 
-        </div>
+        </main>
+
     );
+
 }
 
 export default Landing;

@@ -1,37 +1,62 @@
 import { useState } from "react";
 
-type SearchBoxProps = {
-    onSearch: (query: string) => void;
-};
+import {
+    Button,
+    Card,
+    TextArea,
+} from "@/components/ui";
 
-function SearchBox({ onSearch }: SearchBoxProps) {
+interface Props {
+    onSearch(query: string): void;
+}
+
+function SearchBox({
+    onSearch,
+}: Props) {
+
     const [query, setQuery] = useState("");
 
-    const handleSubmit = () => {
-        if (!query.trim()) return;
+    const handleSearch = () => {
+
+        if (!query.trim()) {
+            return;
+        }
 
         onSearch(query);
+
     };
 
     return (
-        <div className="flex flex-col gap-4 w-full max-w-2xl">
 
-            <textarea
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ask anything..."
-                className="border rounded-xl p-4 h-32 resize-none"
-            />
+        <Card className="w-full max-w-3xl">
 
-            <button
-                onClick={handleSubmit}
-                className="bg-blue-600 text-white rounded-xl py-3"
-            >
-                Search
-            </button>
+            <div className="space-y-5">
 
-        </div>
+                <TextArea
+                    rows={4}
+                    placeholder="Ask anything..."
+                    value={query}
+                    onChange={(e) =>
+                        setQuery(e.target.value)
+                    }
+                />
+
+                <div className="flex justify-end">
+
+                    <Button
+                        onClick={handleSearch}
+                    >
+                        🔍 Search
+                    </Button>
+
+                </div>
+
+            </div>
+
+        </Card>
+
     );
+
 }
 
 export default SearchBox;

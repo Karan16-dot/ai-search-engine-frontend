@@ -1,14 +1,17 @@
 function Hero() {
     return (
-        <div className="text-center space-y-4">
-            <h1 className="text-5xl font-bold">
+        <section className="text-center space-y-6">
+
+            <h1 className="text-6xl font-bold tracking-tight">
                 AI Search Engine
             </h1>
 
-            <p className="text-gray-600 text-lg">
-                Search the web with AI-powered answers.
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Search the web with grounded AI answers powered by
+                Gemini and real-time search.
             </p>
-        </div>
+
+        </section>
     );
 }
 
