@@ -1,34 +1,52 @@
 import { useState } from "react";
 
-import { streamChat } from "../services/stream";
+import { streamResponse } from "@/services/stream";
 
 export function useStream() {
 
-    const [status, setStatus] = useState("");
-
     const [answer, setAnswer] = useState("");
+
+    const [status, setStatus] = useState("");
 
     const [loading, setLoading] = useState(false);
 
-    const startStream = async (query: string) => {
-
-        setLoading(true);
+    const startStream = async (
+        query: string
+    ) => {
 
         setAnswer("");
 
-        await streamChat(query, {
+        setLoading(true);
+
+        await streamResponse(query, {
 
             onStatus(message) {
+
                 setStatus(message);
+
             },
 
             onToken(token) {
-                setAnswer((previous) => previous + token);
+
+                setAnswer(previous =>
+                    previous + token
+                );
+
             },
 
-            onDone() {
+            onComplete() {
+
                 setLoading(false);
+
             },
+
+            onError(message) {
+
+                console.error(message);
+
+                setLoading(false);
+
+            }
 
         });
 

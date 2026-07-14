@@ -1,26 +1,30 @@
 export interface StreamCallbacks {
-    onStatus?: (message: string) => void;
+    onStatus?: (status: string) => void;
     onToken?: (token: string) => void;
-    onDone?: () => void;
-    onError?: (error: Error) => void;
+    onComplete?: () => void;
+    onError?: (message: string) => void;
 }
 
-export async function streamChat(
+export async function streamResponse(
     message: string,
     callbacks: StreamCallbacks
 ) {
-    const response = await fetch("http://127.0.0.1:8000/stream", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            message,
-        }),
-    });
+    const response = await fetch(
+        "http://127.0.0.1:8000/stream",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                message,
+            }),
+        }
+    );
 
     if (!response.body) {
-        throw new Error("No response body.");
+        callbacks.onError?.("No response body.");
+        return;
     }
 
     const reader = response.body.getReader();
@@ -31,36 +35,45 @@ export async function streamChat(
 
     while (true) {
 
-        const { value, done } = await reader.read();
+        const { done, value } = await reader.read();
 
-        if (done) break;
+        if (done) {
+            callbacks.onComplete?.();
+            break;
+        }
 
         buffer += decoder.decode(value);
 
-        const events = buffer.split("\n\n");
+        const chunks = buffer.split("\n\n");
 
-        buffer = events.pop() ?? "";
+        buffer = chunks.pop() ?? "";
 
-        for (const event of events) {
+        for (const chunk of chunks) {
 
-            if (!event.startsWith("data: ")) continue;
+            if (!chunk.startsWith("data: ")) {
+                continue;
+            }
 
-            const json = event.replace("data: ", "");
+            const json = chunk.replace("data: ", "");
 
-            const payload = JSON.parse(json);
+            const event = JSON.parse(json);
 
-            switch (payload.type) {
+            switch (event.type) {
 
                 case "status":
-                    callbacks.onStatus?.(payload.message);
+                    callbacks.onStatus?.(
+                        event.message
+                    );
                     break;
 
                 case "token":
-                    callbacks.onToken?.(payload.content);
+                    callbacks.onToken?.(
+                        event.content
+                    );
                     break;
 
                 case "done":
-                    callbacks.onDone?.();
+                    callbacks.onComplete?.();
                     break;
             }
         }
