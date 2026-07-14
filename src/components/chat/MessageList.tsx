@@ -1,8 +1,13 @@
+import ChatMessage from "./ChatMessage";
+
 function MessageList() {
     return (
-        <div className="message-list">
+        <div className="space-y-8">
 
-            <p>No conversation yet.</p>
+            <ChatMessage
+                role="assistant"
+                content="Hello! Ask me anything."
+            />
 
         </div>
     );

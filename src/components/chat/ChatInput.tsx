@@ -1,15 +1,37 @@
-function ChatInput() {
-    return (
-        <div className="chat-input">
+import { useState } from "react";
 
-            <textarea
-                placeholder="Ask anything..."
+import {
+    Button,
+    TextArea,
+} from "@/components/ui";
+
+interface ChatInputProps {
+    initialQuery?: string;
+}
+
+function ChatInput({
+    initialQuery = "",
+}: ChatInputProps) {
+
+    const [query, setQuery] = useState(initialQuery);
+
+    return (
+        <div className="space-y-4">
+
+            <TextArea
                 rows={3}
+                value={query}
+                placeholder="Ask a follow-up..."
+                onChange={(e) =>
+                    setQuery(e.target.value)
+                }
             />
 
-            <button>
-                Search
-            </button>
+            <div className="flex justify-end">
+                <Button>
+                    Send
+                </Button>
+            </div>
 
         </div>
     );
