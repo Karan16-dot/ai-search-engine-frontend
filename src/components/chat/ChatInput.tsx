@@ -6,34 +6,54 @@ import {
 } from "@/components/ui";
 
 interface ChatInputProps {
-    onSend(message:string): void;
-    loading: boolean
+    onSend: (message: string) => void;
+    loading: boolean;
 }
 
 function ChatInput({
-    initialQuery = "",
+    onSend,
+    loading,
 }: ChatInputProps) {
+    const [query, setQuery] = useState("");
 
-    const [query, setQuery] = useState(initialQuery);
+    const handleSend = () => {
+        if (!query.trim()) {
+            return;
+        }
+
+        onSend(query);
+
+        setQuery("");
+    };
+
+    const handleKeyDown = (
+        event: React.KeyboardEvent<HTMLTextAreaElement>
+    ) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+
+            handleSend();
+        }
+    };
 
     return (
         <div className="space-y-4">
-
             <TextArea
                 rows={3}
-                value={query}
                 placeholder="Ask a follow-up..."
-                onChange={(e) =>
-                    setQuery(e.target.value)
-                }
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
             />
 
             <div className="flex justify-end">
-                <Button>
-                    Send
+                <Button
+                    onClick={handleSend}
+                    disabled={loading}
+                >
+                    {loading ? "Thinking..." : "Send"}
                 </Button>
             </div>
-
         </div>
     );
 }
