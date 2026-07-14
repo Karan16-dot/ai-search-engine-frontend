@@ -1,13 +1,17 @@
+import type { Source } from "@/types/chat";
+
 export interface StreamCallbacks {
     onStatus?: (status: string) => void;
     onToken?: (token: string) => void;
+    onSources?: (sources: Source[]) => void;
     onComplete?: () => void;
     onError?: (message: string) => void;
 }
 
 export async function streamResponse(
     message: string,
-    callbacks: StreamCallbacks
+    callbacks: StreamCallbacks,
+    signal?: AbortSignal
 ) {
     const response = await fetch(
         "http://127.0.0.1:8000/stream",
@@ -19,6 +23,7 @@ export async function streamResponse(
             body: JSON.stringify({
                 message,
             }),
+            signal,
         }
     );
 
@@ -33,49 +38,64 @@ export async function streamResponse(
 
     let buffer = "";
 
-    while (true) {
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
 
-        const { done, value } = await reader.read();
-
-        if (done) {
-            callbacks.onComplete?.();
-            break;
-        }
-
-        buffer += decoder.decode(value);
-
-        const chunks = buffer.split("\n\n");
-
-        buffer = chunks.pop() ?? "";
-
-        for (const chunk of chunks) {
-
-            if (!chunk.startsWith("data: ")) {
-                continue;
+            if (done) {
+                // Ensure decoder prints remaining characters
+                buffer += decoder.decode(undefined, { stream: false });
+                callbacks.onComplete?.();
+                break;
             }
 
-            const json = chunk.replace("data: ", "");
+            buffer += decoder.decode(value, { stream: true });
 
-            const event = JSON.parse(json);
+            const chunks = buffer.split("\n\n");
 
-            switch (event.type) {
+            buffer = chunks.pop() ?? "";
 
-                case "status":
-                    callbacks.onStatus?.(
-                        event.message
-                    );
-                    break;
+            for (const chunk of chunks) {
+                const cleanedChunk = chunk.trim();
+                if (!cleanedChunk.startsWith("data: ")) {
+                    continue;
+                }
 
-                case "token":
-                    callbacks.onToken?.(
-                        event.content
-                    );
-                    break;
+                const json = cleanedChunk.replace("data: ", "");
+                
+                try {
+                    const event = JSON.parse(json);
 
-                case "done":
-                    callbacks.onComplete?.();
-                    break;
+                    switch (event.type) {
+                        case "status":
+                            callbacks.onStatus?.(event.message);
+                            break;
+
+                        case "token":
+                            callbacks.onToken?.(event.content);
+                            break;
+
+                        case "sources":
+                            callbacks.onSources?.(event.sources);
+                            break;
+
+                        case "done":
+                            callbacks.onComplete?.();
+                            break;
+                    }
+                } catch (parseError) {
+                    console.error("Error parsing SSE JSON stream chunk:", parseError, json);
+                }
             }
         }
+    } catch (streamError: any) {
+        if (streamError.name === "AbortError") {
+            console.log("Stream generation aborted by user.");
+            // Don't trigger standard error callback for intentional aborts
+        } else {
+            callbacks.onError?.(streamError.message || "Streaming error occurred.");
+        }
+    } finally {
+        reader.releaseLock();
     }
 }

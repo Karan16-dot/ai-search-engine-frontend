@@ -5,7 +5,7 @@ import App from "./App";
 
 import "./index.css";
 
-import { ChatProvider } from "@/context/ChatContext";
+import { ChatProvider } from "@/features/chat";
 
 ReactDOM.createRoot(
     document.getElementById("root")!

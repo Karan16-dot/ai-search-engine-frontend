@@ -6,16 +6,18 @@ export interface ChatMessage {
     content: string;
 }
 
-export interface Conversation {
-    id: string;
-    title: string;
-    messages: ChatMessage[];
-}
-
 export interface Source {
     title: string;
     url: string;
     snippet?: string;
+}
+
+export interface Conversation {
+    id: string;
+    title: string;
+    messages: ChatMessage[];
+    sources: Source[];
+    createdAt: string;
 }
 
 export interface ChatResponse {

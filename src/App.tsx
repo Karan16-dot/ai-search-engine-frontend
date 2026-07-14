@@ -1,33 +1,22 @@
-import {
-    Button,
-    Card,
-    Container,
-    Input,
-    Spinner,
-    TextArea,
-} from "@/components/ui";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+
+import { ChatWorkspace } from "@/features/chat";
+import Home from "@/pages/Home";
 
 function App() {
     return (
-        <Container className="py-10">
-            <Card className="space-y-6">
-                <h1 className="text-3xl font-bold">
-                    AI Search Engine Design System
-                </h1>
+        <BrowserRouter>
+            <Routes>
+                {/* Landing page search view */}
+                <Route path="/" element={<Home />} />
 
-                <Input placeholder="Search..." />
+                {/* Conversation workspace view */}
+                <Route path="/chat/:id" element={<ChatWorkspace />} />
 
-                <TextArea
-                    rows={5}
-                    placeholder="Ask anything..."
-                />
-
-                <div className="flex gap-4 items-center">
-                    <Button>Primary Button</Button>
-                    <Spinner />
-                </div>
-            </Card>
-        </Container>
+                {/* Catch-all route to redirect back to landing */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 

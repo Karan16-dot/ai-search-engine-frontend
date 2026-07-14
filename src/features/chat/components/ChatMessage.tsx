@@ -25,7 +25,7 @@ function ChatMessage({
                     py-4
                     ${
                         isAssistant
-                            ? "bg-gray-100"
+                            ? "bg-gray-100 text-gray-900"
                             : "bg-blue-600 text-white"
                     }
                 `}
@@ -33,7 +33,7 @@ function ChatMessage({
                 {isAssistant ? (
                     <MarkdownRenderer content={content} />
                 ) : (
-                    content
+                    <span className="whitespace-pre-wrap">{content}</span>
                 )}
             </div>
         </div>
