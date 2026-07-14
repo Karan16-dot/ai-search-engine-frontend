@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 import ChatMessage from "./ChatMessage";
+import FollowUpQuestions from "./FollowUpQuestions";
 
 import { useChatContext } from "../context/ChatContext";
 import { Spinner } from "@/components/ui";
@@ -13,7 +14,12 @@ function MessageList() {
     // Auto-scroll to the bottom of the chat container
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages.length, loading, status]);
+    }, [
+        messages.length,
+        loading,
+        status,
+        activeConversation?.relatedQuestions?.length,
+    ]);
 
     // Check if the assistant is still searching/thinking (last message is empty assistant placeholder)
     const isAssistantThinking =
@@ -71,6 +77,9 @@ function MessageList() {
                     </div>
                 </div>
             )}
+
+            {/* Render Suggested Queries Chips */}
+            <FollowUpQuestions />
 
             <div ref={messagesEndRef} />
         </div>

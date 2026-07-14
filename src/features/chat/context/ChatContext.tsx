@@ -218,6 +218,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
                         ...c,
                         messages: [...c.messages, userMessage],
                         sources: [], // Clear old sources for the new turn
+                        relatedQuestions: [], // Clear old related questions
                     };
                 }
                 return c;
@@ -291,10 +292,41 @@ export function ChatProvider({ children }: ChatProviderProps) {
                             })
                         );
                     },
+                    onRelated(incomingQuestions) {
+                        setConversations((prev) =>
+                            prev.map((c) => {
+                                if (c.id === currentActiveId) {
+                                    return {
+                                        ...c,
+                                        relatedQuestions: incomingQuestions,
+                                    };
+                                }
+                                return c;
+                            })
+                        );
+                    },
                     onComplete() {
                         setLoading(false);
                         setStatus("");
                         abortControllerRef.current = null;
+
+                        // Trigger fallback questions if none were received during stream
+                        setConversations((prev) =>
+                            prev.map((c) => {
+                                if (
+                                    c.id === currentActiveId &&
+                                    (!c.relatedQuestions ||
+                                        c.relatedQuestions.length === 0)
+                                ) {
+                                    return {
+                                        ...c,
+                                        relatedQuestions:
+                                            generateFallbackQuestions(messageText),
+                                    };
+                                }
+                                return c;
+                            })
+                        );
                     },
                     onError(errorMsg) {
                         // Display error directly in assistant's bubble
@@ -374,4 +406,58 @@ export function useChatContext() {
         throw new Error("useChatContext must be used inside a ChatProvider.");
     }
     return context;
+}
+
+// 6. Smart Fallback Question Generator
+function generateFallbackQuestions(query: string): string[] {
+    const q = query.toLowerCase();
+
+    if (q.includes("fastapi") || q.includes("python") || q.includes("stream")) {
+        return [
+            "What are the performance limits of SSE in FastAPI?",
+            "How to handle CORS issues in FastAPI streaming?",
+            "Can I stream JSON structured events through FastAPI SSE?",
+        ];
+    }
+    if (
+        q.includes("react") ||
+        q.includes("vite") ||
+        q.includes("component") ||
+        q.includes("context")
+    ) {
+        return [
+            "How to optimize re-renders when using React Context?",
+            "What is the difference between React Router v7 and v6?",
+            "How to implement custom debounce inside React inputs?",
+        ];
+    }
+    if (
+        q.includes("docker") ||
+        q.includes("container") ||
+        q.includes("deploy")
+    ) {
+        return [
+            "How to containerize a FastAPI and React app together?",
+            "What is the best way to manage environment variables in Docker?",
+            "How to reduce Docker image sizes for React frontends?",
+        ];
+    }
+    if (
+        q.includes("rag") ||
+        q.includes("search") ||
+        q.includes("gemini") ||
+        q.includes("ai")
+    ) {
+        return [
+            "How does vector embedding retrieval work in RAG?",
+            "How to handle context window limits with Gemini 1.5 Flash?",
+            "What is the difference between keyword and semantic vector search?",
+        ];
+    }
+
+    return [
+        `Can you explain more details about "${query}"?`,
+        "What are the practical use cases and design patterns for this?",
+        "Are there any alternative approaches or common trade-offs?",
+    ];
 }

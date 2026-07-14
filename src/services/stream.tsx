@@ -4,6 +4,7 @@ export interface StreamCallbacks {
     onStatus?: (status: string) => void;
     onToken?: (token: string) => void;
     onSources?: (sources: Source[]) => void;
+    onRelated?: (questions: string[]) => void;
     onComplete?: () => void;
     onError?: (message: string) => void;
 }
@@ -77,6 +78,10 @@ export async function streamResponse(
 
                         case "sources":
                             callbacks.onSources?.(event.sources);
+                            break;
+
+                        case "related":
+                            callbacks.onRelated?.(event.questions);
                             break;
 
                         case "done":

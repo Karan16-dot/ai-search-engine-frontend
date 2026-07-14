@@ -17,6 +17,7 @@ export interface Conversation {
     title: string;
     messages: ChatMessage[];
     sources: Source[];
+    relatedQuestions?: string[];
     createdAt: string;
 }
 

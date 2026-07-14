@@ -17,7 +17,7 @@ function SourceList({
     return (
         <section className="mt-8">
 
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-slate-200 select-none">
                 📚 Sources
             </h2>
 
