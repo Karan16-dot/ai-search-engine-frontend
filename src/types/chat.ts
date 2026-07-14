@@ -13,6 +13,7 @@ export interface ChatRequest {
 export interface Source {
     title: string;
     url: string;
+    snippet?: string;
 }
 
 export interface ChatResponse {

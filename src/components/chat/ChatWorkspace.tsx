@@ -4,33 +4,60 @@ import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageList from "./MessageList";
 
+import SourceList from "@/components/search/SourceList";
+
 import { useChatContext } from "@/context/ChatContext";
 
 interface ChatWorkspaceProps {
     initialQuery: string;
 }
 
-function ChatWorkspace({ initialQuery }: ChatWorkspaceProps) {
-
-    const { sendMessage } = useChatContext();
+function ChatWorkspace({
+    initialQuery,
+}: ChatWorkspaceProps) {
+    const {
+        sendMessage,
+        sources,
+    } = useChatContext();
 
     useEffect(() => {
         if (initialQuery.trim()) {
             sendMessage(initialQuery);
         }
-    }, [initialQuery, sendMessage]);
+    }, []);
 
     return (
         <div className="flex flex-col h-screen bg-gray-50">
 
+            {/* Header */}
             <ChatHeader />
 
-            <main className="flex-1 overflow-y-auto px-8 py-6">
-                <MessageList />
+            {/* Main Content */}
+            <main className="flex-1 overflow-y-auto">
+
+                <div className="mx-auto max-w-5xl px-6 py-8">
+
+                    {/* Conversation */}
+                    <MessageList />
+
+                    {/* Sources */}
+                    <SourceList
+                        sources={sources}
+                    />
+
+                </div>
+
             </main>
 
-            <footer className="border-t bg-white px-8 py-6">
-                <ChatInput />
+            {/* Chat Input */}
+            <footer className="border-t bg-white">
+
+                <div className="mx-auto max-w-5xl px-6 py-6">
+
+                    <ChatInput />
+
+                </div>
+
             </footer>
 
         </div>
