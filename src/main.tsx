@@ -5,6 +5,7 @@ import App from "./App";
 
 import "./index.css";
 
+import { AuthProvider } from "@/context/AuthContext";
 import { ChatProvider } from "@/features/chat";
 
 ReactDOM.createRoot(
@@ -13,11 +14,15 @@ ReactDOM.createRoot(
 
     <React.StrictMode>
 
-        <ChatProvider>
+        <AuthProvider>
 
-            <App />
+            <ChatProvider>
 
-        </ChatProvider>
+                <App />
+
+            </ChatProvider>
+
+        </AuthProvider>
 
     </React.StrictMode>
 

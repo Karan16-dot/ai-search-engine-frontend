@@ -1,7 +1,11 @@
-function Spinner() {
+interface SpinnerProps {
+    className?: string;
+}
+
+function Spinner({ className = "" }: SpinnerProps) {
     return (
         <div
-            className="
+            className={`
                 h-6
                 w-6
                 animate-spin
@@ -9,7 +13,8 @@ function Spinner() {
                 border-4
                 border-blue-600
                 border-t-transparent
-            "
+                ${className}
+            `}
         />
     );
 }

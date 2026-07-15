@@ -1,8 +1,9 @@
 import { useState, type KeyboardEvent, type MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { MessageSquare, Plus, Trash2, Pencil } from "lucide-react";
+import { MessageSquare, Plus, Trash2, Pencil, LogOut } from "lucide-react";
 
 import { useChatContext } from "../context/ChatContext";
+import { useAuthContext } from "@/context/AuthContext";
 
 function ConversationSidebar() {
     const {
@@ -11,6 +12,7 @@ function ConversationSidebar() {
         deleteConversation,
         renameConversation,
     } = useChatContext();
+    const { logout, user } = useAuthContext();
     const navigate = useNavigate();
 
     // 1. Rename State Tracker
@@ -213,6 +215,45 @@ function ConversationSidebar() {
                     </div>
                 )}
             </div>
+
+            {/* 5. User Profile Footer with Sign Out */}
+            {user && (
+                <div className="p-4 border-t border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-slate-900/20 flex items-center justify-between gap-3 select-none shrink-0 transition-colors duration-300">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        {/* Letter Icon Avatar */}
+                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-bold flex items-center justify-center text-sm shrink-0 border border-blue-200/20 dark:border-blue-900/30">
+                            {user.username ? user.username[0].toUpperCase() : "U"}
+                        </div>
+                        <div className="min-w-0 flex flex-col">
+                            <span className="text-sm font-semibold text-gray-800 dark:text-slate-200 truncate">
+                                {user.username}
+                            </span>
+                            <span className="text-xs text-gray-400 dark:text-slate-500 truncate">
+                                {user.email || "No email"}
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={logout}
+                        className="
+                            p-1.5
+                            rounded-lg
+                            hover:bg-gray-200/60
+                            dark:hover:bg-slate-800/80
+                            text-gray-400
+                            hover:text-red-600
+                            dark:hover:text-red-400
+                            transition-all
+                            cursor-pointer
+                            active:scale-95
+                        "
+                        title="Sign Out"
+                    >
+                        <LogOut className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
         </aside>
     );
 }
